@@ -1,5 +1,5 @@
 This is a README file. If you can see this, then that means you are reading me, which is good. 
-# DataSeek: does stuff that /ds doens't™ 
+# Data Seek: does stuff that /ds doens't™ 
 by a_farfetched_person (aka sumwun) 
 
 First and foremost, this program is very bad. So if you want to report bugs, suggest features, or ask questions, then try posting that stuff on one of these 3 places: 
