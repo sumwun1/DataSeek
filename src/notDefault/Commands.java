@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Commands {
     public static void commands() {
-    	/*testWelcome to Data Seek: does stuff that /ds doesn't™. When you want 
+    	/*Welcome to Data Seek: does stuff that /ds doesn't™. When you want 
     	to use it, simply type your commands in this method and click run. I 
     	recommend reading the README file first, though. */
     	ds("movepool>=128,!learnsalltypes");
