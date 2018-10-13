@@ -11,13 +11,17 @@ public class Coverage implements Comparable<Coverage>{
 	public static double[][] chart6 = new double[19][18];
 	public static double[][] chart = chart6;
     private ArrayList<String> types;
-    private int[] effectivenesses = new int[3];
+    private int[] stats = new int[3];
     private ArrayList<String> notVery = new ArrayList<String>();
 	private ArrayList<String> regular = new ArrayList<String>();
 	private ArrayList<String> supe = new ArrayList<String>();
     
     public Coverage(ArrayList<String> input) {
-    	types = input;
+    	/*for(int i = 0; i < input.length; i ++) {
+    		System.out.println(input[i]);
+    	}*/
+    	
+    	types = copyList(input);
     	//System.out.println(chart6[0].length + " " + chart6.length);
     	
     	for(int i = 0; i < chart[0].length; i ++) {
@@ -33,9 +37,14 @@ public class Coverage implements Comparable<Coverage>{
 					comboName = defenseNames[i];
 					
 					for(String type : types) {
-						//System.out.println(type + " " + getIndex(attackNames, type) + " " + i);
+						//System.out.println(type);
 						if(indexOf(attackNames, type) < chart.length) {
+							//System.out.println(type);
 						    maxEffectiveness = Math.max(maxEffectiveness, chart[indexOf(attackNames, type)][i]);
+						    
+						    /*if("freeze-dry".equals(type)) {
+						    	System.out.println(" " + chart[indexOf(attackNames, type)][i]);
+						    }*/
 						}
 					}
 				}else {
@@ -58,41 +67,41 @@ public class Coverage implements Comparable<Coverage>{
 			}
 		}
     	
-    	effectivenesses[0] = notVery.size();
-    	effectivenesses[1] = regular.size();
-    	effectivenesses[2] = supe.size();
+    	stats[0] = notVery.size();
+    	stats[1] = regular.size();
+    	stats[2] = supe.size();
     }
     
     public String bestAddition(int additions) {
-    	Coverage[] bestAdditions = new Coverage[additions];
-    	String[] bestTypes = new String[additions];
+    	ArrayList<Coverage> potentialCombos = new ArrayList<Coverage>();
     	ArrayList<String> potentialTypes = new ArrayList<String>();
     	
     	for(int i = 0; i < types.size(); i ++) {
-    		potentialTypes.add(types.get(i));
+    		potentialTypes.set(i, types.get(i));
     	}
     	
-    	potentialTypes.add(null);
-    	
     	for(int x = 0; x < attackNames.length; x ++) {
+    		potentialTypes = copyList(potentialTypes);
     		potentialTypes.set(types.size(), attackNames[x]);
-    		Coverage potentialCombo = new Coverage(potentialTypes);
-    		//System.out.println(attackNames[x] + " " + potentialCombo.effectivenesses[0]);
+    		potentialCombos.add(new Coverage(potentialTypes));
     		
-    		for(int y = 0; y < additions; y ++) {
-    		    if(potentialCombo.compareTo(bestAdditions[y]) > 0) {
-    			    shift(bestTypes, attackNames[x], y);
+    		/*for(int y = 0; y < additions; y ++) {
+    			if(potentialCombo.compareTo(bestAdditions[y]) > 0) {
     			    shift(bestAdditions, potentialCombo, y);
     			    break;
     		    }
-    		}
+    		}*/
     	}
     	
-    	String out = "";
+    	ArrayList<ArrayList<Coverage>> bestAdditions = bestCombos(potentialCombos, additions);
+    	String out = "Best Additions \n";
     	
-    	for(int i = 0; i < additions; i ++) {
-    		//System.out.println(minNotVery[i] + " " + maxSuper[i]);
-    		out = out + bestTypes[i] + " ";
+    	for(int x = 0; x < additions; x ++) {
+    		for(int y = 0; y < bestAdditions.get(x).size(); y ++) {
+    			out = out + differTypes(bestAdditions.get(x).get(y));
+    		}
+    		
+    		out = out + '\n';
     	}
     	
     	return(out);
@@ -168,16 +177,76 @@ public class Coverage implements Comparable<Coverage>{
     }
 	
     @Override
-	public String toString() {
-		return("Not very effective: " + effectivenesses[0] + " Regular effectiveness: " + effectivenesses[1] + " Super effective: " 
-				+ effectivenesses[2] + " \nNot very effective: " + notVery + " \nRegular effectiveness: " + regular + " \nSuper effective: " 
-				+ supe);
-	}
-    
-    public String getTypes() {
-    	return(types.toString());
+    public String toString() {
+    	return(toString(false, true, false));
     }
+    
+	public String toString(boolean getTypes, boolean getStats, boolean getEffectivenesses) {
+		String out = "";
+		
+		if(getTypes) {
+			out = out + getTypes() + '\n';
+		}
+		
+		if(getStats) {
+			out = out + getStats() + '\n';
+		}
+		
+		if(getEffectivenesses) {
+			out = out + getEffectivenesses() + '\n';
+		}
+		
+		return(out);
+	}
 
+    public String getTypes() {
+    	String out = "";
+    	
+    	for(int i = 0; i < types.size(); i ++) {
+    		out = out + types.get(i) + " ";
+    	}
+    	
+    	return(out);
+    }
+    
+    public String getStats() {
+    	return("Not very effective: " + stats[0] + " Regular effectiveness: " + stats[1] + " Super effective: " + stats[2]);
+    }
+    
+    public String getEffectivenesses() {
+    	return("Not very effective: " + notVery + " \nRegular effectiveness: " + regular + " \nSuper effective: " + supe);
+    }
+    
+    /*public String toStringWithTypes() {
+    	return(getTypes() + '\n' + toString());
+    }*/
+    
+    public String differTypes(Coverage other) {
+    	String[] typesCopy = new String[other.types.size()];
+    	String out = "";
+    	
+    	for(int i = 0; i < typesCopy.length; i ++) {
+    		//System.out.println(typesCopy.length + " " + other.types.length + " " + i);
+    		typesCopy[i] = other.types.get(i);
+    	}
+    	
+    	for(int x = 0; x < types.size(); x ++) {
+    		for(int y = 0; y < typesCopy.length; y ++) {
+    			if(types.get(x).equals(typesCopy[y])) {
+    				typesCopy[y] = "";
+    			}
+    		}
+    	}
+    	
+    	for(int i = 0; i < typesCopy.length; i ++) {
+    		if(!typesCopy[i].isEmpty()) {
+    		    out = out + typesCopy[i] + " ";
+    		}
+    	}
+    	
+    	return(out);
+    }
+    
 	public static int indexOf(String[] array, String string) {
 		for(int i = 0; i < array.length; i ++) {
 			String maybeSubstring = string;
@@ -193,6 +262,7 @@ public class Coverage implements Comparable<Coverage>{
 			}
 		}
 		
+		System.out.println(string + " is making me return -1!");
 		return(-1);
 	}
 	
@@ -373,16 +443,70 @@ public class Coverage implements Comparable<Coverage>{
 		chart[indexOf(attackNames, attack)][indexOf(defenseNames, defense)] = 1.0;
 	}
 	
+	public static ArrayList<ArrayList<Coverage>> bestCombos(ArrayList<Coverage> combos, int outputSize){
+		ArrayList<ArrayList<Coverage>> out = new ArrayList<ArrayList<Coverage>>();
+		out.add(combos);
+		
+		while(out.size() < outputSize) {
+			out.add(new ArrayList<Coverage>());
+		}
+		
+		for(int x = 0; x < outputSize; x ++) {
+			boolean different = true;
+			ArrayList<Coverage> nextList = new ArrayList<Coverage>();
+			
+			try {
+				nextList = out.get(x + 1);
+			}catch(IndexOutOfBoundsException exception) {}
+			
+			while(different) {
+				different = false;
+				int ties = 1;
+				//System.out.println("reached0");
+				
+				while(ties < out.get(x).size()) {
+					if(out.get(x).get(0).compareTo(out.get(x).get(ties)) > 0){
+						nextList.add(out.get(x).remove(ties));
+						different = true;
+					}else if(out.get(x).get(0).compareTo(out.get(x).get(ties)) < 0) {
+						for(int y = 0; y < ties; y ++) {
+							nextList.add(out.get(x).remove(0));
+						}
+						
+						ties = 1;
+						different = true;
+					}else if(out.get(x).get(0).compareTo(out.get(x).get(ties)) == 0){
+						ties ++;
+					}else {
+						System.out.println(out.get(x).get(0).toString(true, true, true) + " and " + out.get(x).get(ties).toString(true, true, true) + " were not better, worse, or equal!");
+					}
+				}
+			}
+		}
+		
+		return(out);
+	}
+	
+	public static ArrayList<String> copyList(ArrayList<String> in) {
+		ArrayList<String> out = new ArrayList<String>();
+		
+		for(int i = 0; i < in.size(); i ++) {
+			out.set(i, in.get(i));
+		}
+		
+		return(out);
+	}
+	
 	public int compareTo(Coverage other) {
 		if(other == null) {
 			return(1);
 		}
 		
-		if(effectivenesses[0] == other.effectivenesses[0]) {
-			return(effectivenesses[2] - other.effectivenesses[2]);
+		if(stats[0] == other.stats[0]) {
+			return(stats[2] - other.stats[2]);
 		}
 		
-		return(other.effectivenesses[0] - effectivenesses[0]);
+		return(other.stats[0] - stats[0]);
 	}
 	
 	public boolean equals(Coverage other) {

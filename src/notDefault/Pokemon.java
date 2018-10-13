@@ -68,7 +68,11 @@ public class Pokemon {
     		
     		if(line.startsWith(string + ' ')) {
     			String type = line.substring(line.indexOf(' ') + 1);
-    			addTruth("learns" + type + "type");//27 sec
+    			
+    			if(addTruth("learns" + type + "type")) {//27 sec
+    				statistics[1] ++;
+    			}
+    			
     			break;
     		}
     	}

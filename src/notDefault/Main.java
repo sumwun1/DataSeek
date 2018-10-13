@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-	public static final String[] statistics = {"movepool"};
+	public static final String[] statistics = {"movepool", "learnedtypes"};
 	public static ArrayList<Pokemon> pokedex;
 	
 	public static void main(String[] args) throws Exception{
@@ -14,7 +14,7 @@ public class Main {
 		Coverage.fillChart();
 		pokedex = new ArrayList<Pokemon>();
 		Scanner learnIn = new Scanner(new File("learnsets.txt"));
-		Pokemon pokemon = new Pokemon("bulbasaur");
+		Pokemon pokemon = new Pokemon(upToColon(learnIn.nextLine().trim()));
 		int counter = 0;
 		
 		while(learnIn.hasNext()) {

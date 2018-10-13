@@ -7,11 +7,14 @@ public class Commands {
     	/*Welcome to Data Seek: does stuff that /ds doesn't™. When you want 
     	to use it, simply type your commands right underneath this comment and 
     	click run. I recommend reading the README file first, though. */
-    	ds("movepool>=128,!learnsalltypes");
+    	ds("movepool>=128,!learnsgroundtype");
     	dt("mewtwo,movepool,pound");
     	mean("movepool,learnsghosttype");
     	cover("fire,fighting,ground,flying,bug,dark,steel,freeze-dry");
     	bestaddition("3,fire,fighting,ground,flying,bug,dark,steel,freeze-dry");
+    	mean("learnedtypes");
+    	ds("learnedtypes>15");
+    	ds("learnedtypes>16");
     }
     
     private static void ds(String in) {
