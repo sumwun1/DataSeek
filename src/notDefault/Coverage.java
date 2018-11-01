@@ -94,7 +94,7 @@ public class Coverage implements Comparable<Coverage>{
     	}
     	
     	ArrayList<ArrayList<Coverage>> bestAdditions = bestCombos(potentialCombos, additions);
-    	String out = "Best Additions \n";
+    	String out = "";
     	
     	for(int x = 0; x < additions; x ++) {
     		for(int y = 0; y < bestAdditions.get(x).size(); y ++) {
