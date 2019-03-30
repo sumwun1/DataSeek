@@ -17,17 +17,17 @@ public class StatSearch implements Search{
     	
     	switch(condition) {
     	case 0:
-    		return(pokemon.getStatistic(index) == number);
+    		return(pokemon.getStat(index) == number);
     	case 1:
-    		return(pokemon.getStatistic(index) < number);
+    		return(pokemon.getStat(index) < number);
     	case 2:
-    		return(pokemon.getStatistic(index) > number);
+    		return(pokemon.getStat(index) > number);
     	case 3:
-    		return(pokemon.getStatistic(index) != number);
+    		return(pokemon.getStat(index) != number);
     	case 4:
-    		return(pokemon.getStatistic(index) <= number);
+    		return(pokemon.getStat(index) <= number);
     	case 5:
-    		return(pokemon.getStatistic(index) >= number);
+    		return(pokemon.getStat(index) >= number);
     	}
     	
     	return(false);

@@ -18,11 +18,11 @@ This program uses Java, so when you type the name of a command, you need to type
 
 ds("movepool>=128,!learnsalltypes");
 
-When you want to put multiple inputs into a command, separate them with ",". Also, when typing commands, don't use CAPITAL LETTERS, spaces, or mispeled words. If this program is printing weird things, then that's probably what happened. Specific instructions for each command are in the Commands.java file. 
+When you want to put multiple inputs into a command, separate them with ",". Specific instructions for each command are in the Commands.java file. 
 
-The ds, dt, and mean commands deal with Pokemon data. Currently, the only information I have on each Pokemon are their moves, the size of their movepools, whether or not they can learn each type of move, and whether or not they can learn every type of move. You should probably tell me if you really want this program to read something else. 
+The ds, dt, and mean commands deal with Pokemon data. Currently, the only information I have on each Pokemon are their moves, the size of their movepools, whether or not they can learn each type of move, and each of their base stats, and their base stat totals. You should probably tell me if you really want this program to read something else. 
 
-All Pokemon information is divided into two categories: statistics and truths. Statistics are numbers, and truths are yes-or-no questions. "Can it learn karate chop?" and "Can it learn a fire move?" are both examples of truths. The only statistic I store is movepool size. 
+All Pokemon information is divided into two categories: statistics and truths. Statistics are numbers, and truths are yes-or-no questions. "Can it learn karate chop?" and "Can it learn a fire move?" are both examples of truths. "What is its special defense?" and "How many types of movex can it learn?" are examples of statistics. 
 
 When using ds to search truths, you only need to type the name of the truth. For example, ds("karatechop"); searches for Pokemon that learn karate chop. You can type "!" in front of the truth, but only if you want to find Pokemon where that truth is false. 
 

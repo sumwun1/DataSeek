@@ -2,10 +2,10 @@ package notDefault;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 public class Main {
-	public static final String[] statistics = {"movepool", "learnedtypes"};
+	public static final String[] statistics = {"movepool", "learnedtypes", "hp", "atk", "def", "spa", "spd", "spe", "bst"};
 	public static ArrayList<Pokemon> pokedex;
 	
 	public static void main(String[] args) throws Exception{
@@ -13,12 +13,16 @@ public class Main {
 		System.out.println("reading database...please be patient...");
 		Coverage.fillChart();
 		pokedex = new ArrayList<Pokemon>();
-		Scanner learnIn = new Scanner(new File("learnsets.txt"));
-		Pokemon pokemon = new Pokemon(upToColon(learnIn.nextLine().trim()));
+		BufferedReader learnIn = new BufferedReader(new FileReader("learnsets.txt"));
+		Pokemon pokemon = new Pokemon(upToColon(learnIn.readLine().trim().toLowerCase()));
 		int counter = 0;
 		
-		while(learnIn.hasNext()) {
-			String line = learnIn.nextLine().trim();
+		while(true) {
+			String line = learnIn.readLine().trim().toLowerCase();
+			
+			if(line == null) {
+				break;
+			}
 			
 			if(line.equals("}},")) {
 				//pokemon.confirmMoves();
@@ -29,11 +33,14 @@ public class Main {
 					System.out.println("read " + counter + " movepools...");
 				}
 				
-				if(learnIn.hasNext()) {
-					line = learnIn.nextLine().trim();
-					pokemon = new Pokemon(upToColon(line));
+				line = learnIn.readLine();
+				
+				if(line == null) {
+					break;
 				}
 				
+				line = line.trim().toLowerCase();
+				pokemon = new Pokemon(upToColon(line));
 				continue;
 			}
 			
@@ -54,12 +61,20 @@ public class Main {
 		getPokemon("rotomfrost").transferMoves(getPokemon("rotom"));
 		getPokemon("rotomfan").transferMoves(getPokemon("rotom"));
 		getPokemon("rotommow").transferMoves(getPokemon("rotom"));
-		File pokedexFile = new File("pokedex.txt");
-		System.out.println("checking for pre-evolutions...");
+		//FileReader pokedexFile = ;
+		System.out.println("reading stats...");
 		
-		for(int i = 0; i < pokedex.size(); i ++) {
-			Scanner pokedexIn = new Scanner(pokedexFile);
-			pokedex.get(i).setPrevolution(getPokemon(findQuality(pokedexIn, pokedex.get(i).toString(), "prevo: \"", "},", false)));
+		for(int x = 0; x < pokedex.size(); x ++) {
+			BufferedReader pokedexIn = new BufferedReader(new FileReader("pokedex.txt"));
+			String entry = findEntry(pokedexIn, pokedex.get(x).toString(), "},", false);
+			pokedex.get(x).setPrevolution(getPokemon(findQuality(entry, "prevo: \"")));
+			ArrayList<String> statsList = toList(findQuality(entry, "baseStats: {"));
+			
+			for(int y = 0; y < 6; y ++) {
+				pokedex.get(x).setStat(upToColon(statsList.get(y)), Integer.parseInt(statsList.get(y).substring(statsList.get(y).indexOf(':') + 1)));
+			}
+			
+			pokedex.get(x).setStat("bst", pokedex.get(x).getStat(2) + pokedex.get(x).getStat(3) + pokedex.get(x).getStat(4) + pokedex.get(x).getStat(5) + pokedex.get(x).getStat(6) + pokedex.get(x).getStat(7));
 		}
 		
 		System.out.println("adding pre-evolution moves...");
@@ -70,7 +85,7 @@ public class Main {
 			    pokedex.get(i).transferMoves(pokedex.get(i).getPrevolution());
 			}
 			
-			if(pokedex.get(i).isTrue("learnsnormaltype") && pokedex.get(i).isTrue("learnsfiretype") 
+			/*if(pokedex.get(i).isTrue("learnsnormaltype") && pokedex.get(i).isTrue("learnsfiretype") 
 					&& pokedex.get(i).isTrue("learnswatertype") && pokedex.get(i).isTrue("learnselectrictype") 
 					&& pokedex.get(i).isTrue("learnsgrasstype") && pokedex.get(i).isTrue("learnsicetype") 
 					&& pokedex.get(i).isTrue("learnsfightingtype") && pokedex.get(i).isTrue("learnspoisontype") 
@@ -80,12 +95,13 @@ public class Main {
 					&& pokedex.get(i).isTrue("learnsdragontype") && pokedex.get(i).isTrue("learnsdarktype") 
 					&& pokedex.get(i).isTrue("learnssteeltype") && pokedex.get(i).isTrue("learnsfairytype")) {
 				pokedex.get(i).addTruth("learnsalltypes");
-			}
+			}*/
 			
 			pokedex.get(i).confirmMoves();
 		}
 		
-		//pokedex.get(0).debug();
+		learnIn.close();
+		//IntString.commonMoves();
         Commands.commands();
 	}
 	
@@ -112,12 +128,12 @@ public class Main {
 		ArrayList<String> out = new ArrayList<String>();
 		
 		while(string.indexOf(',') >= 0) {
-			out.add(string.substring(0, string.indexOf(',')));
+			out.add(string.substring(0, string.indexOf(',')).replace(" ", ""));
 			//System.out.println("possible out of bounds: " + string.indexOf(',' + 1));
 			string = string.substring(string.indexOf(',') + 1);
 		}
 		
-		out.add(string);
+		out.add(string.replace(" ", ""));
 		return(out);
 	}
 	
@@ -194,25 +210,58 @@ public class Main {
 		return(new TruthSearch(string));
 	}
 	
-	public static String findQuality(Scanner input, String name, String quality, String end, boolean hasQuote) {
-		while(input.hasNext()) {
-			if(input.nextLine().trim().startsWith(isQuote(hasQuote) + name)) {
+	public static String findEntry(BufferedReader input, String name, String end, boolean hasQuote) throws IOException{
+		while(true) {
+			String line = input.readLine();
+			
+			if(line == null) {
+				System.out.println(name + " wasn't found in a file!");
+				return(null);
+			}
+			
+			line = line.trim().toLowerCase();
+			//System.out.println(line + " " + isQuote(hasQuote) + name + " " + (line.startsWith(isQuote(hasQuote) + name)));
+			if(line.startsWith(isQuote(hasQuote) + name)) {
+				String out = "";
+				
 				while(true) {
-					String line = input.nextLine().trim();
+					line = input.readLine().trim();
+					out = out + line + '\n';
 					
 					if(end.equals(line)) {
-						break;
+						return(out);
 					}
 					
-					if(line.startsWith(quality)) {
-						return(line.substring(quality.length(), line.length() - 2).toLowerCase());
+					/*if(line.startsWith(quality)) {
+						return(line.substring(quality.length(), line.length() - 2).trim().toLowerCase());
 					}
+					
+					//System.out.println("reached2");*/
 				}
-				break;
+				//break;
 			}
+			
+			//System.out.println("reached3");
 		}
 		
-		return(null);
+		//return(null);
+	}
+	
+	public static String findQuality(String entry, String quality) {
+		while(true) {
+			/*line = input.readLine().trim();
+			out = out + line + '\n';*/
+			
+			if(!entry.contains("\n")) {
+				return(null);
+			}
+			
+		    if(entry.startsWith(quality)) {
+				return(entry.substring(quality.length(), entry.indexOf('\n') - 2).trim().toLowerCase());
+			}
+			
+			entry = entry.substring(entry.indexOf('\n')).trim();
+		}
 	}
 	
 	public static String isQuote(boolean hasQuote) {

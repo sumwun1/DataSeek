@@ -724,3 +724,4 @@ yawn normal
 zapcannon electric
 zenheadbutt psychic
 zingzap electric
+zippyzap electric

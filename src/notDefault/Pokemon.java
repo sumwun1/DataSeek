@@ -1,8 +1,8 @@
 package notDefault;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 public class Pokemon {
 	private String name;
@@ -33,11 +33,11 @@ public class Pokemon {
     	return(false);
     }
     
-    public int getStatistic(String string) {
+    public int getStat(String string) {
     	return(statistics[Main.indexOf(Main.statistics, string)]);
     }
     
-    public int getStatistic(int index) {
+    public int getStat(int index) {
     	return(statistics[index]);
     }
     
@@ -61,10 +61,14 @@ public class Pokemon {
     	
     	//no comments: 27 sec
     	movepool.add(string);
-    	Scanner input = new Scanner(new File("movetypes.txt"));
+    	BufferedReader input = new BufferedReader(new FileReader("movetypes.txt"));
     	
-    	while(input.hasNext()) {//11 sec
-    		String line = input.nextLine();
+    	while(true) {//11 sec
+    		String line = input.readLine();
+    		
+    		if(line == null) {
+    			break;
+    		}
     		
     		if(line.startsWith(string + ' ')) {
     			String type = line.substring(line.indexOf(' ') + 1);
@@ -79,7 +83,16 @@ public class Pokemon {
     	
     	//truths.add(string);
     	statistics[0] = movepool.size();
+    	input.close();
     	return(true);
+    }
+    
+    public Pokemon getPrevolution() {
+    	return(prevolution);
+    }
+    
+    public ArrayList<String> getMovepoolCopy(){
+    	return(new ArrayList<String>(movepool));
     }
     
     public void setStat(String string, int number) {
@@ -106,16 +119,12 @@ public class Pokemon {
     	prevolution = pokemon;
     }
     
-    public Pokemon getPrevolution() {
-    	return(prevolution);
-    }
-    
     public void debug() {
     	System.out.println(toString());
     	
-    	for(int i = 0; i < statistics[0]; i ++) {
+    	/*for(int i = 0; i < statistics[0]; i ++) {
     		System.out.println(movepool.get(i));
-    	}
+    	}*/
     	
     	System.out.println(prevolution);
     	System.out.println(isTrue("learnswatertype"));

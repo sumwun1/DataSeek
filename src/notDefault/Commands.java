@@ -7,14 +7,15 @@ public class Commands {
     	/*Welcome to Data Seek: does stuff that /ds doesn't™. When you want 
     	to use it, simply type your commands right underneath this comment and 
     	click run. I recommend reading the README file first, though. */
-    	ds("movepool>=128,!learnsgroundtype");
-    	dt("mewtwo,movepool,pound");
-    	mean("movepool,learnsghosttype");
-    	cover("fire,fighting,ground,flying,bug,dark,steel,freeze-dry");
-    	bestaddition("3,fire,fighting,ground,flying,bug,dark,steel,freeze-dry");
-    	mean("learnedtypes");
-    	ds("learnedtypes>15");
-    	ds("learnedtypes>16");
+    	ds("hp>128");
+    	dt("mewtwo,def,pound");
+    	mean("hp");
+    	/*cover("fire,fighting,ground,flying,bug,dark,steel,freeze-dry");
+    	bestaddition("3,fire,fighting,ground,flying,bug,dark,steel,freeze-dry");*/
+    	mean("spd");
+    	ds("spd<=24");
+    	ds("learnedtypes>=18");
+    	dt("chansey,spe");
     }
     
     private static void ds(String in) {
@@ -28,7 +29,7 @@ public class Commands {
     	 * Pokemon learning at least 128 moves but can't 
     	 * learn a move of every type. */
     	System.out.println("/ds " + in);
-    	System.out.println(Main.search(Main.toList(in)));
+    	System.out.println(Main.search(Main.toList(in.trim().toLowerCase())));
     }
     
     private static void dt(String in) {
@@ -41,7 +42,7 @@ public class Commands {
     	 * of Mewtwo's movepool, followed by whether or 
     	 * not it can learn pound. */
     	System.out.println("/dt " + in);
-    	ArrayList<String> list = Main.toList(in);
+    	ArrayList<String> list = Main.toList(in.trim().toLowerCase());
     	Pokemon pokemon = Main.getPokemon(list.remove(0));
     	String out = "";
     	
@@ -57,7 +58,7 @@ public class Commands {
     			
     			if(list.get(x).equals(Main.statistics[y])) {
     				isTruth = false;
-    				out = out + pokemon.getStatistic(list.get(x)) + ',';
+    				out = out + pokemon.getStat(list.get(x)) + ',';
     			}
     		}
     		
@@ -77,13 +78,13 @@ public class Commands {
     	 * example, mean("movepool,learnsghosttype"); prints the 
     	 * movepool size of the average ghost move learner. */
     	System.out.println("/mean " + in);
-    	ArrayList<String> searchList = Main.toList(in);
+    	ArrayList<String> searchList = Main.toList(in.trim().toLowerCase());
     	String string = searchList.remove(0);
     	ArrayList<Pokemon> foundList = Main.search(searchList);
     	double total = 0.0;
     	
         for(int i = 0; i < foundList.size(); i ++) {
-        	total += foundList.get(i).getStatistic(string);
+        	total += foundList.get(i).getStat(string);
         }
         
         if(foundList.size() > 0) {
@@ -102,7 +103,7 @@ public class Commands {
     	 * regularly effective, or super effective 
     	 * against. */
     	System.out.println("/cover " + in);
-    	System.out.println(new Coverage(Main.toList(in)));
+    	System.out.println(new Coverage(Main.toList(in.trim().toLowerCase())));
     }
     
     private static void bestaddition(String in) {
@@ -114,7 +115,7 @@ public class Commands {
     	 * prints the 3 best types for covering stuff when added to that 
     	 * combination, starting with the very best one. */
     	System.out.println("/bestaddition " + in);
-    	ArrayList<String> list = Main.toList(in);
+    	ArrayList<String> list = Main.toList(in.trim().toLowerCase());
     	int additions = Integer.parseInt(list.remove(0));
     	System.out.println((new Coverage(list)).bestAddition(additions));
     }
